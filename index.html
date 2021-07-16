@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <!--<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>-->
+        <script src="js/jquery-3.4.1.min.js"></script>
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-orange.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Garage Manager</title>
+    </head>
+    <body>
+      <!-- Always shows a header, even in smaller screens. -->
+      <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+          <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">Garage Manager</span>
+            <!-- Add spacer, to align navigation to the right -->
+            <div class="mdl-layout-spacer"></div>
+            <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--white" onclick="getState();">
+              <i class="material-icons">autorenew</i>
+            </button>
+          </div>
+        </header>
+        <div class="mdl-layout__drawer">
+          <span class="mdl-layout-title">Garage Manager</span>
+          <nav class="mdl-navigation">
+            <a class="mdl-navigation__link" onclick="viewPage('home');" href="#home">Home</a>
+            <a class="mdl-navigation__link" onclick="viewPage('notificationsettings');" href="#notificationsettings">Notification Settings</a>
+            <a class="mdl-navigation__link" onclick="viewPage('serversettings');" href="#serversettings">Server Settings</a>
+          </nav>
+        </div>
+        <main class="mdl-layout__content">
+          <section id="home">
+            <div class="page-content">
+              <!-- Your content goes here -->
+              <div class="mdl-grid">
+                <div class="mdl-cell" style="width:100%;">
+                  <p style="color:blue;text-align:left;margin-top:5px;margin-left:45%" id="home-away-garage-text">Home</p>
+                  <label style="margin-left:45%" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="home-away-garage">
+                    <input type="checkbox" id="home-away-garage" onclick="onGarageSave();" class="mdl-switch__input"/>
+                    <span class="mdl-switch__label"> </span>
+                  </label>
+                  <div style="margin-bottom:20px"></div>
+                  <img id="garageStatus" class="garageStatus" src="img/loading-big.gif" style="width:100px;">
+                  <figcaption id="error" style="margin-bottom:20px;"></figcaption>
+                  <button id="garageTriggerButton" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" style="margin-bottom:20px;" onclick="onGarageTrigger();"> </button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="notificationsettings" style="display:none">
+            <div class="page-content">
+              <div class="mdl-grid">
+                <div class="mdl-cell" style="width:100%;">
+                    <p style="color:blue;text-align:left;margin-top:5px" id="alertNotifyLabel">Alert Garage Open Notification</p>
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="alertNotify">
+                      <input type="checkbox" id="alertNotify" class="mdl-switch__input"/>
+                      <span class="mdl-switch__label"> </span>
+                    </label>
+                    <div class="mdl-grid">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="alertMinutes">
+                        <label class="mdl-textfield__label" for="alertMinutes">Minutes open to alert</label>
+                        <span class="mdl-textfield__error">Input is not a number!</span>
+                      </div>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*?" id="alertStart">
+                        <label class="mdl-textfield__label" for="alertStart">Hour to start alerting (1-24)</label>
+                        <span class="mdl-textfield__error">Input is not a number!</span>
+                      </div>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*?" id="alertEnd">
+                        <label class="mdl-textfield__label" for="alertEnd">Hour to end alerting (1-24)</label>
+                        <span class="mdl-textfield__error">Input is not a number!</span>
+                      </div>
+                    </div>
+                    <p style="color:blue;text-align:left;margin-top:5px" id="forgotNotifyLabel">Forgot Garage Open Notification</p>
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="forgotNotify">
+                      <input type="checkbox" id="forgotNotify" class="mdl-switch__input"/>
+                      <span class="mdl-switch__label"> </span>
+                    </label>
+                    <div class="mdl-grid">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="forgotMinutes">
+                        <label class="mdl-textfield__label" for="forgotMinutes">Minutes open to alert</label>
+                        <span class="mdl-textfield__error">Input is not a number!</span>
+                      </div>
+                    </div>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" style="margin-bottom:20px;" onclick="onGarageSave();">Save</button>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" style="margin-bottom:20px;" onclick="onGarageState();">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="serversettings" style="display:none">
+            <div class="page-content">
+              <div class="mdl-grid">
+                <div class="mdl-cell">
+                  <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <input class="mdl-textfield__input" type="text" id="domain" onChange="saveServerSettings();">
+                      <label class="mdl-textfield__label" for="domain">Domain (www.example.com)</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="port" onChange="saveServerSettings();">
+                      <label class="mdl-textfield__label" for="port">Port</label>
+                      <span class="mdl-textfield__error">Input is not a number!</span>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <input class="mdl-textfield__input" type="text" id="username" onChange="saveServerSettings();">
+                      <label class="mdl-textfield__label" for="username">Username</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <input class="mdl-textfield__input" type="password" id="password" required name="password" onChange="saveServerSettings();">
+                      <label class="mdl-textfield__label" for="password">Password</label>
+                    </div>
+                  </form>
+                  <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" style="margin-bottom:20px;" onclick="getDeviceID();">Send Device ID</button>
+                </div>
+                <div class="mdl-cell">
+                  <div class="app">
+                    Apache Cordova
+                    <div id="deviceready">
+                      <p class="event listening">Connecting to Device</p>
+                      <p class="event received">Device is Ready</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+      <script type="text/javascript" src="cordova.js"></script>
+      <script type="text/javascript" src="js/server.js"></script>
+      <script type="text/javascript" src="js/garage.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
+    </body>
+
+</html>
